@@ -256,8 +256,6 @@ body{display:flex;align-items:center;justify-content:center;background:#0c1416;f
       <div class="card2">
         <div class="row"><div><div class="rlabel">Animation</div><div class="rsub">main breathing visual</div></div></div>
         <div class="row"><div class="segwrap" id="segAnim"><button data-anim="lotus" class="on">Lotus</button><button data-anim="orb">Orb</button></div></div>
-        <div class="row"><div><div class="rlabel">Colour theme</div><div class="rsub">Auto follows the animation</div></div></div>
-        <div class="row"><div class="segwrap" id="segTheme"><button data-theme="auto" class="on">Auto</button><button data-theme="lotus">Lotus</button><button data-theme="orb">Orb</button><button data-theme="tide">Tide</button><button data-theme="bar">Bar</button><button data-theme="flame">Flame</button><button data-theme="cosmos">Cosmos</button><button data-theme="rose">Rose</button><button data-theme="square">Square</button><button data-theme="pebble">Pebble</button></div></div>
       </div>
       <div class="grp">Sound</div>
       <div class="card2">
@@ -355,14 +353,12 @@ const ANIMS=[
 .inner{width:25%;height:25%;opacity:.85}
 .orb{position:absolute;width:88%;height:88%;border-radius:50%;background:#16e0c0;will-change:transform;z-index:1}`,make:function(stage){var orb=stage.querySelector("#orb");return function(e){orb.style.transform="scale("+(0.284+0.716*e).toFixed(3)+")";};}}
 ];
-var CUR=null,curAnim="lotus",autoTheme=true,fixedTheme="lotus";function matchTheme(a){return a==="count"?"square":a;}function applyTheme(){appEl.setAttribute("data-theme",autoTheme?matchTheme(curAnim):fixedTheme);syncThemeSel();}const stageEl=document.getElementById("stage"),appEl=document.querySelector(".app");
+var CUR=null,curAnim="";function matchTheme(a){return a==="count"?"square":a;}function applyTheme(){appEl.setAttribute("data-theme",matchTheme(curAnim));}const stageEl=document.getElementById("stage"),appEl=document.querySelector(".app");
 function renderDots(){var sw=document.querySelector(".swipe");if(sw)sw.innerHTML=ANIMS.map(function(a){return "<i"+(a.key===curAnim?" class=\"on\"":"")+"></i>";}).join("");}
 function syncAnimSel(){var g=document.getElementById("segAnim");if(g)[...g.children].forEach(function(b){b.classList.toggle("on",b.getAttribute("data-anim")===curAnim);});}
-function syncThemeSel(){var g=document.getElementById("segTheme");if(!g)return;[...g.children].forEach(function(b){var k=b.getAttribute("data-theme");b.classList.toggle("on",autoTheme?(k==="auto"):(k===fixedTheme));});}
-function selectAnim(key){var a=ANIMS.find(function(x){return x.key===key;});if(!a)return;curAnim=key;stageEl.innerHTML=a.html;animStyle.textContent=a.css;CUR=a.make(stageEl);appEl.setAttribute("data-anim",key);renderDots();syncAnimSel();applyTheme();}
-function selectTheme(key){if(key==="auto"){autoTheme=true;}else{autoTheme=false;fixedTheme=key;}applyTheme();}
-(function(){var ga=document.getElementById("segAnim");if(ga)[...ga.children].forEach(function(b){b.addEventListener("click",function(){selectAnim(b.getAttribute("data-anim"));});});var gt=document.getElementById("segTheme");if(gt)[...gt.children].forEach(function(b){b.addEventListener("click",function(){selectTheme(b.getAttribute("data-theme"));});});})();
-(function(){var x0=null,y0=null;stageEl.addEventListener("touchstart",function(e){var t=e.changedTouches[0];x0=t.clientX;y0=t.clientY;},{passive:true});stageEl.addEventListener("touchend",function(e){if(x0==null)return;var t=e.changedTouches[0],dx=t.clientX-x0,dy=t.clientY-y0;if(Math.abs(dx)>40&&Math.abs(dx)>Math.abs(dy)){var i=ANIMS.findIndex(function(a){return a.key===curAnim;});i=(i+(dx<0?1:-1)+ANIMS.length)%ANIMS.length;selectAnim(ANIMS[i].key);}x0=y0=null;},{passive:true});})();
+function selectAnim(key){var a=ANIMS.find(function(x){return x.key===key;});if(!a||key===curAnim)return;curAnim=key;stageEl.innerHTML=a.html;animStyle.textContent=a.css;CUR=a.make(stageEl);appEl.setAttribute("data-anim",key);renderDots();syncAnimSel();applyTheme();}
+(function(){var ga=document.getElementById("segAnim");if(ga)[...ga.children].forEach(function(b){b.addEventListener("click",function(){selectAnim(b.getAttribute("data-anim"));});});})();
+(function(){var x0=null,y0=null,EDGE=48;stageEl.addEventListener("touchstart",function(e){var t=e.changedTouches[0];if(t.clientX<EDGE||t.clientX>window.innerWidth-EDGE){x0=null;return;}x0=t.clientX;y0=t.clientY;},{passive:true});stageEl.addEventListener("touchend",function(e){if(x0==null)return;var t=e.changedTouches[0],dx=t.clientX-x0,dy=t.clientY-y0;if(Math.abs(dx)>40&&Math.abs(dx)>Math.abs(dy)){var i=ANIMS.findIndex(function(a){return a.key===curAnim;});i=(i+(dx<0?1:-1)+ANIMS.length)%ANIMS.length;selectAnim(ANIMS[i].key);}x0=y0=null;},{passive:true});})();
 selectAnim("lotus");
 const SUN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4 12H2M22 12h-2M5 5l1.5 1.5M17.5 17.5L19 19M19 5l-1.5 1.5M6.5 17.5L5 19"/></svg>',MOON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A8 8 0 1 1 11.2 3a6.5 6.5 0 0 0 9.8 9.8z"/></svg>';
 const app=document.getElementById('app'),themeBtn=document.getElementById('theme');let dark=false;
